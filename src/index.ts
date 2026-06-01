@@ -14,8 +14,19 @@ const content = await readFile(
 const question =
     content.split("\n")[0]?.trim() ?? "";
 
-const result = app.analyzer.analyze(
-    question
-);
+try {
 
-console.log(result);
+    const result =
+        await app.processor.process(question);
+
+    console.log(result);
+
+} catch (error) {
+
+    if (error instanceof Error) {
+        console.log(error.message);
+        process.exit(1);
+    }
+
+    throw error;
+}
