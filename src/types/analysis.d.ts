@@ -4,7 +4,9 @@ import type { DateEntity } from "./date";
 import type { LocationEntity } from "./location";
 
 export interface AnalysisResult {
-  intent: Intent | null;
+  intent: string;
+  // intentScore: number;
+  // ruleIntent: Intent | null;
   customer: CustomerEntity | null;
   area: AreaEntity | null;
   location: LocationEntity | null;

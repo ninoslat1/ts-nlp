@@ -1,20 +1,26 @@
-import { intents } from "./static/INTENT";
+import { intentCorpus, intents } from "./static/INTENT";
 
 import { QueryAnalyzer } from "./chatbot/query_analyzer";
 import { QueryProcessor } from "./chatbot/query_processor";
+import { NLPModule } from "./chatbot/nlp_module";
+import { TfIdf } from "./chatbot/tf_idf";
 
 import { IntentDetector } from "./intents/detector";
+
 import { EntityService } from "./services/entity.service";
 
 import { AreaRepository } from "./repositories/area.repository";
 import { CustomerRepository } from "./repositories/customer.repository";
 import { LocationRepository } from "./repositories/location.repository";
+
 import { DateExtractor } from "./entities/date_extractor";
-import { AnalysisValidator } from "./chatbot/validate_analyzer";
 import { EntityValidator } from "./entities/validate_entities";
 
+import { AnalysisValidator } from "./chatbot/validate_analyzer";
+
 export class App {
-  readonly processor: QueryProcessor;
+  processor!: QueryProcessor;
+
   readonly entityService: EntityService;
 
   constructor() {
@@ -23,18 +29,6 @@ export class App {
       new CustomerRepository(),
       new LocationRepository(),
     );
-
-    const analyzer = new QueryAnalyzer(
-      new IntentDetector(intents),
-      this.entityService,
-      new DateExtractor(),
-    );
-
-    const analysisValidator = new AnalysisValidator();
-
-    const entityValidator = new EntityValidator(this.entityService);
-
-    this.processor = new QueryProcessor(analyzer, analysisValidator, entityValidator);
   }
 
   async bootstrap() {
@@ -43,5 +37,29 @@ export class App {
     await this.entityService.init();
 
     console.log("Entities loaded");
+
+    const tfidf = new TfIdf();
+
+    const corpus = [
+      ...intentCorpus.map((x) => x.text),
+
+      ...this.entityService.getCustomers().map((x) => x.customer_name),
+
+      ...this.entityService.getLocations().map((x) => x.name),
+
+      ...this.entityService.getAreas().map((x) => x.remark),
+    ];
+
+    tfidf.fit(corpus);
+
+    const nlpModule = new NLPModule(tfidf, intentCorpus, this.entityService);
+
+    const analyzer = new QueryAnalyzer(new DateExtractor(), nlpModule);
+
+    this.processor = new QueryProcessor(
+      analyzer,
+      new AnalysisValidator(),
+      new EntityValidator(this.entityService),
+    );
   }
 }
