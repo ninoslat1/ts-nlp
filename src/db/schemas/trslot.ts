@@ -9,9 +9,7 @@ import {
 } from "drizzle-orm/mysql-core";
 
 export const trsTable = mysqlTable("trslot", {
-  trsId: bigint("TrsID", { mode: "number" })
-    .autoincrement()
-    .primaryKey(),
+  trsId: bigint("TrsID", { mode: "number" }).autoincrement().primaryKey(),
 
   id: varchar("ID", { length: 255 }),
 

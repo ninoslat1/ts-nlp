@@ -6,27 +6,19 @@ const app = new App();
 
 await app.bootstrap();
 
-const content = await readFile(
-    "./prompt.txt",
-    "utf-8"
-);
+const content = await readFile("./prompt.txt", "utf-8");
 
-const question =
-    content.split("\n")[0]?.trim() ?? "";
+const question = content.split("\n")[0]?.trim() ?? "";
 
 try {
+  const result = await app.processor.process(question);
 
-    const result =
-        await app.processor.process(question);
-
-    console.log(result);
-
+  console.log(result);
 } catch (error) {
+  if (error instanceof Error) {
+    console.log(error.message);
+    process.exit(1);
+  }
 
-    if (error instanceof Error) {
-        console.log(error.message);
-        process.exit(1);
-    }
-
-    throw error;
+  throw error;
 }

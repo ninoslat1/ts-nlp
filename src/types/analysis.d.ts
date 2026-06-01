@@ -8,5 +8,5 @@ export interface AnalysisResult {
   customer: CustomerEntity | null;
   area: AreaEntity | null;
   location: LocationEntity | null;
-  date: DateEntity | null
+  date: DateEntity | null;
 }

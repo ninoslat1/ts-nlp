@@ -16,42 +16,35 @@ import { AnalysisValidator } from "./chatbot/validate_analyzer";
 import { EntityValidator } from "./entities/validate_entities";
 
 export class App {
-    readonly processor: QueryProcessor;
-    readonly entityService: EntityService;
+  readonly processor: QueryProcessor;
+  readonly entityService: EntityService;
 
-    constructor() {
-        this.entityService = new EntityService(
-            new AreaRepository(),
-            new CustomerRepository(),
-            new LocationRepository()
-        );
+  constructor() {
+    this.entityService = new EntityService(
+      new AreaRepository(),
+      new CustomerRepository(),
+      new LocationRepository(),
+    );
 
-        const analyzer = new QueryAnalyzer(
-            new IntentDetector(intents),
-            new EntityExtractor(),
-            this.entityService,
-            new DateExtractor()
-        );
+    const analyzer = new QueryAnalyzer(
+      new IntentDetector(intents),
+      new EntityExtractor(),
+      this.entityService,
+      new DateExtractor(),
+    );
 
-        const analysisValidator = new AnalysisValidator();
+    const analysisValidator = new AnalysisValidator();
 
-        const entityValidator = new EntityValidator(
-            new LocationRepository(),
-            new AreaRepository()
-        );
+    const entityValidator = new EntityValidator(this.entityService);
 
-        this.processor = new QueryProcessor(
-            analyzer,
-            analysisValidator,
-            entityValidator
-        );
-    }
+    this.processor = new QueryProcessor(analyzer, analysisValidator, entityValidator);
+  }
 
-    async bootstrap() {
-        console.log("Loading entities...");
+  async bootstrap() {
+    console.log("Loading entities...");
 
-        await this.entityService.init();
+    await this.entityService.init();
 
-        console.log("Entities loaded");
-    }
+    console.log("Entities loaded");
+  }
 }

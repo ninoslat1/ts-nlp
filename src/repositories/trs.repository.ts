@@ -1,7 +1,9 @@
 export class TrsRepository {
-    constructor(){}
+  constructor() {}
 
-    async getTrxFromEntity(customerName: string | null, locationName: string | null, areaName: string | null){
-        
-    }
+  async getTrxFromEntity(
+    customerName: string | null,
+    locationName: string | null,
+    areaName: string | null,
+  ) {}
 }

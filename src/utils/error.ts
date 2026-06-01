@@ -1,13 +1,13 @@
 export class EntityNotFoundError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "EntityNotFoundError";
-    }
+  constructor(message: string) {
+    super(message);
+    this.name = "EntityNotFoundError";
+  }
 }
 
 export class EntityRelationError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "EntityRelationError";
-    }
+  constructor(message: string) {
+    super(message);
+    this.name = "EntityRelationError";
+  }
 }

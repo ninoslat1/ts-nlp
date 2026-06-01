@@ -1,3 +1,1 @@
-export type Intent =
-    | "transaction_report"
-    | "revenue_report";
+export type Intent = "transaction_report" | "revenue_report";

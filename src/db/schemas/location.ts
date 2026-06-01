@@ -1,10 +1,4 @@
-import {
-  mysqlTable,
-  int,
-  varchar,
-  tinyint,
-  datetime,
-} from "drizzle-orm/mysql-core";
+import { mysqlTable, int, varchar, tinyint, datetime } from "drizzle-orm/mysql-core";
 
 export const locationTable = mysqlTable("config", {
   id: int("ID").autoincrement().primaryKey(),
@@ -21,25 +15,15 @@ export const locationTable = mysqlTable("config", {
     length: 50,
   }),
 
-  androidPort: int("AndroidPort")
-    .notNull()
-    .default(8080),
+  androidPort: int("AndroidPort").notNull().default(8080),
 
-  hppcPort: int("HppcPort")
-    .notNull()
-    .default(8181),
+  hppcPort: int("HppcPort").notNull().default(8181),
 
-  igPort: int("IgPort")
-    .notNull()
-    .default(0),
+  igPort: int("IgPort").notNull().default(0),
 
-  lotPayment: tinyint("LotPayment")
-    .notNull()
-    .default(0),
+  lotPayment: tinyint("LotPayment").notNull().default(0),
 
-  lotClosing: tinyint("LotClosing")
-    .notNull()
-    .default(0),
+  lotClosing: tinyint("LotClosing").notNull().default(0),
 
   userId: int("UserID"),
 
