@@ -1,3 +1,4 @@
+import { distance } from "fastest-levenshtein";
 import type { AreaRepository } from "../repositories/area.repository";
 import type { CustomerRepository } from "../repositories/customer.repository";
 import type { LocationRepository } from "../repositories/location.repository";
@@ -13,8 +14,8 @@ export class EntityService {
   private locationById = new Map<number, LocationEntity>();
   private areaById = new Map<number, AreaEntity>();
   private locationByName = new Map<string, LocationEntity>();
-    private areaByName = new Map<string, AreaEntity>();
-    private customerByName = new Map<string, CustomerEntity>();
+  private areaByName = new Map<string, AreaEntity>();
+  private customerByName = new Map<string, CustomerEntity>();
 
   constructor(
     private readonly areaRepo: AreaRepository,
@@ -24,47 +25,47 @@ export class EntityService {
 
   async init() {
     const [customers, areas, locations] = await Promise.all([
-        this.customerRepo.load_customer(),
-        this.areaRepo.load_area(),
-        this.locationRepo.load_location(),
+      this.customerRepo.load_customer(),
+      this.areaRepo.load_area(),
+      this.locationRepo.load_location(),
     ]);
 
     this.customers = customers.map((x) => ({
-        id: x.id,
-        customer_name: x.customer_name?.toLowerCase() ?? "",
+      id: x.id,
+      customer_name: x.customer_name?.toLowerCase() ?? "",
     }));
 
     this.areas = areas.map((x) => ({
-        id: x.id,
-        remark: x.remark?.toLowerCase() ?? "",
-        locationId: x.locationId
+      id: x.id,
+      remark: x.remark?.toLowerCase() ?? "",
+      locationId: x.locationId,
     }));
 
     this.locations = locations.map((x) => ({
-        id: x.id,
-        name: x.name?.toLowerCase() ?? "",
-        customerId: x.customerId
+      id: x.id,
+      name: x.name?.toLowerCase() ?? "",
+      customerId: x.customerId,
     }));
 
     this.locationById.clear();
     this.areaById.clear();
 
     for (const loc of this.locations) {
-        this.locationById.set(loc.id, loc);
-        this.locationByName.set(loc.name, loc)
+      this.locationById.set(loc.id, loc);
+      this.locationByName.set(loc.name, loc);
     }
 
     for (const area of this.areas) {
-        this.areaById.set(area.id, area);
-        this.areaByName.set(area.remark, area);
+      this.areaById.set(area.id, area);
+      this.areaByName.set(area.remark, area);
     }
 
     for (const cust of this.customers) {
-        this.customerByName.set(cust.customer_name, cust);
+      this.customerByName.set(cust.customer_name, cust);
     }
 
     this.is_init = true;
-    }
+  }
 
   getCustomers() {
     if (!this.is_init) {
@@ -79,48 +80,100 @@ export class EntityService {
     if (!location) return false;
 
     return location.customerId === customerId;
+  }
+
+  belongsToLocation(areaId: number, locationId: number): boolean {
+    const area = this.areaById.get(areaId);
+    if (!area) return false;
+
+    return area.locationId === locationId;
+  }
+
+  getLocationByName(text: string) {
+    let bestMatch: LocationEntity | null = null;
+    let bestDistance = Infinity;
+
+    const words = text.split(/\s+/);
+    const maxWords = Math.max(...this.locations.map((l) => l.name.split(" ").length));
+
+    for (let i = 0; i < words.length; i++) {
+      for (let j = i + 1; j <= Math.min(i + maxWords, words.length); j++) {
+        const chunk = words.slice(i, j).join(" ");
+
+        for (const loc of this.locations) {
+          const d = distance(chunk, loc.name);
+          const maxAllowed = Math.floor(loc.name.length * 0.4);
+
+          if (d < bestDistance && d <= maxAllowed) {
+            bestDistance = d;
+            bestMatch = loc;
+          }
+        }
+      }
     }
 
-    belongsToLocation(areaId: number, locationId: number): boolean {
-        const area = this.areaById.get(areaId);
-        if (!area) return false;
+    return bestMatch;
+  }
 
-        return area.locationId === locationId;
+  getCustomerByName(text: string) {
+    let bestMatch: CustomerEntity | null = null;
+    let bestDistance = Infinity;
+
+    const words = text.split(/\s+/);
+    const maxWords = Math.max(...this.customers.map((l) => l.customer_name.split(" ").length));
+
+    for (let i = 0; i < words.length; i++) {
+      for (let j = i + 1; j <= Math.min(i + maxWords, words.length); j++) {
+        const chunk = words.slice(i, j).join(" ");
+
+        for (const loc of this.customers) {
+          const d = distance(chunk, loc.customer_name);
+          const maxAllowed = Math.floor(loc.customer_name.length * 0.4);
+
+          if (d < bestDistance && d <= maxAllowed) {
+            bestDistance = d;
+            bestMatch = loc;
+          }
         }
+      }
+    }
 
-getLocationByName(text: string) {
-
-  for (const [name, loc] of this.locationByName) {
-    if (text.includes(name)) return loc;
+    return bestMatch;
   }
 
-  return null;
-}
+  getAreaByName(text: string) {
+    let bestMatch: AreaEntity | null = null;
+    let bestDistance = Infinity;
 
-getCustomerByName(text: string) {
+    const words = text.split(/\s+/);
+    const maxWords = Math.max(...this.areas.map((a) => a.remark.split(" ").length));
 
-  for (const [name, loc] of this.customerByName) {
-    if (text.includes(name)) return loc;
+    for (let i = 0; i < words.length; i++) {
+      for (let j = i + 1; j <= Math.min(i + maxWords, words.length); j++) {
+        const chunk = words.slice(i, j).join(" ");
+
+        for (const area of this.areas) {
+          const d = distance(chunk, area.remark);
+          const maxAllowed = Math.floor(area.remark.length * 0.4);
+
+          if (d < bestDistance && d <= maxAllowed) {
+            bestDistance = d;
+            bestMatch = area;
+          }
+        }
+      }
+    }
+
+    return bestMatch;
   }
-  return null;
-}
-
-getAreaByName(text: string) {
-
-  for (const [name, area] of this.areaByName) {
-    if (text.includes(name)) return area;
-  }
-
-  return null;
-}
 
   getLocationById(id: number) {
     if (!this.is_init) throw new Error("EntityService not initialized");
     return this.locationById.get(id);
-    }
+  }
 
-    getAreaById(id: number) {
+  getAreaById(id: number) {
     if (!this.is_init) throw new Error("EntityService not initialized");
     return this.areaById.get(id);
-    }
+  }
 }

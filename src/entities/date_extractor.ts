@@ -21,7 +21,7 @@ export class DateExtractor {
   extract(text: string): DateEntity | null {
     const lower = text.toLowerCase().trim();
 
-    if (this.RANGE_SEPARATORS.test(lower)){
+    if (this.RANGE_SEPARATORS.test(lower)) {
       return this.extractRange(lower);
     }
 
@@ -29,22 +29,22 @@ export class DateExtractor {
   }
 
   private extractRange(text: string): DateEntity | null {
-    const [leftRaw, rightRaw] = text.split(this.RANGE_SEPARATORS)
+    const [leftRaw, rightRaw] = text.split(this.RANGE_SEPARATORS);
 
     const left = this.parseSingleDate(leftRaw ? leftRaw.trim() : "");
     const right = this.parseSingleDate(rightRaw ? rightRaw.trim() : "");
-    if(!left || !right) return null;
-const startDate = new Date(left.year, left.month, left.day, 0, 0, 0);
-  const endDate = new Date(right.year, right.month, right.day, 23, 59, 59);
+    if (!left || !right) return null;
+    const startDate = new Date(left.year, left.month, left.day, 0, 0, 0);
+    const endDate = new Date(right.year, right.month, right.day, 23, 59, 59);
 
-  if (startDate > endDate) {
-    throw new DateFormatError("Invalid date format: start date must not be after end date");
-  }
+    if (startDate > endDate) {
+      throw new DateFormatError("Invalid date format: start date must not be after end date");
+    }
 
-  return {
-    text: text.trim(),
-    range: { start: startDate, end: endDate },
-  };
+    return {
+      text: text.trim(),
+      range: { start: startDate, end: endDate },
+    };
   }
 
   private extractSingle(text: string): DateEntity | null {
@@ -87,20 +87,20 @@ const startDate = new Date(left.year, left.month, left.day, 0, 0, 0);
         text: "tahun ini",
         range: {
           start: new Date(now.getFullYear(), 0, 1, 0, 0, 0),
-          end: new Date(now.getFullYear(), 11, 31, 23, 59, 59)
+          end: new Date(now.getFullYear(), 11, 31, 23, 59, 59),
         },
-      }
+      };
     }
 
     if (text.includes("tahun lalu")) {
-      const lastYear = now.getFullYear() - 1
+      const lastYear = now.getFullYear() - 1;
       return {
         text: "tahun lalu",
         range: {
           start: new Date(lastYear, 0, 1, 0, 0, 0),
-          end: new Date(lastYear, 11, 31, 23, 59, 59)
+          end: new Date(lastYear, 11, 31, 23, 59, 59),
         },
-      }
+      };
     }
 
     const parsed = this.parseSingleDate(text);
@@ -124,7 +124,7 @@ const startDate = new Date(left.year, left.month, left.day, 0, 0, 0);
     const monthEntry = this.findMonthEntry(text);
     if (!monthEntry) return null;
 
-    const [monthName, month] = monthEntry;
+    const [_, month] = monthEntry;
 
     // Resolve year
     const year = this.resolveYear(text, currentYear);
@@ -143,9 +143,9 @@ const startDate = new Date(left.year, left.month, left.day, 0, 0, 0);
     const explicitYear = text.match(/\b(20\d{2})\b/);
     if (explicitYear && explicitYear?.[1] !== undefined) return parseInt(explicitYear[1], 10);
 
-    if (/\btahun lalu\b/.test(text))  return currentYear - 1;
+    if (/\btahun lalu\b/.test(text)) return currentYear - 1;
     if (/\btahun depan\b/.test(text)) return currentYear + 1;
-    if (/\btahun ini\b/.test(text))   return currentYear;
+    if (/\btahun ini\b/.test(text)) return currentYear;
 
     return currentYear;
   }

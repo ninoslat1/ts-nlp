@@ -1,5 +1,4 @@
 import { IntentDetector } from "../intents/detector";
-import { EntityExtractor } from "../entities/entity_extractor";
 import type { EntityService } from "../services/entity.service";
 import type { DateExtractor } from "../entities/date_extractor";
 import type { AnalysisResult } from "../types/analysis";

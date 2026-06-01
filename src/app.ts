@@ -4,8 +4,6 @@ import { QueryAnalyzer } from "./chatbot/query_analyzer";
 import { QueryProcessor } from "./chatbot/query_processor";
 
 import { IntentDetector } from "./intents/detector";
-import { EntityExtractor } from "./entities/entity_extractor";
-
 import { EntityService } from "./services/entity.service";
 
 import { AreaRepository } from "./repositories/area.repository";

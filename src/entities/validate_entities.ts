@@ -3,16 +3,11 @@ import type { AnalysisResult } from "../types/analysis";
 import { EntityRelationError } from "../utils/error";
 
 export class EntityValidator {
-  constructor(
-    private entityService: EntityService
-  ) {}
+  constructor(private entityService: EntityService) {}
 
-    validateChain(result: AnalysisResult): void {
+  validateChain(result: AnalysisResult): void {
     if (result.customer && result.location) {
-      const valid = this.entityService.belongsToCustomer(
-        result.location.id,
-        result.customer.id,
-      );
+      const valid = this.entityService.belongsToCustomer(result.location.id, result.customer.id);
 
       if (!valid) {
         throw new EntityRelationError(

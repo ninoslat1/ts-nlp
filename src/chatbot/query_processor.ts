@@ -14,7 +14,7 @@ export class QueryProcessor {
 
     this.analysisValidator.validate(result);
 
-    await this.entityValidator.validateChain(result);
+    this.entityValidator.validateChain(result);
 
     return result;
   }

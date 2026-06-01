@@ -1,5 +1,4 @@
 import { dbMst } from "../db";
-import { eq, and } from "drizzle-orm";
 import { areaTable } from "../db/schemas/area";
 
 export class AreaRepository {
@@ -10,13 +9,13 @@ export class AreaRepository {
     return data;
   }
 
-//   async belongsToLocation(areaId: number, locationId: number): Promise<boolean> {
-//     const result = await dbMst
-//       .select()
-//       .from(areaTable)
-//       .where(and(eq(areaTable.id, areaId), eq(areaTable.locationId, locationId)))
-//       .limit(1);
+  //   async belongsToLocation(areaId: number, locationId: number): Promise<boolean> {
+  //     const result = await dbMst
+  //       .select()
+  //       .from(areaTable)
+  //       .where(and(eq(areaTable.id, areaId), eq(areaTable.locationId, locationId)))
+  //       .limit(1);
 
-//     return result.length > 0;
-//   }
+  //     return result.length > 0;
+  //   }
 }

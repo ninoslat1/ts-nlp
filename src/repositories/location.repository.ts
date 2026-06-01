@@ -1,4 +1,3 @@
-import { eq, and } from "drizzle-orm";
 import { dbMst } from "../db";
 import { locationTable } from "../db/schemas/location";
 
@@ -10,13 +9,13 @@ export class LocationRepository {
     return data;
   }
 
-//   async belongsToCustomer(locationId: number, customerId: number): Promise<boolean> {
-//     const result = await dbMst
-//       .select()
-//       .from(locationTable)
-//       .where(and(eq(locationTable.id, locationId), eq(locationTable.customerId, customerId)))
-//       .limit(1);
+  //   async belongsToCustomer(locationId: number, customerId: number): Promise<boolean> {
+  //     const result = await dbMst
+  //       .select()
+  //       .from(locationTable)
+  //       .where(and(eq(locationTable.id, locationId), eq(locationTable.customerId, customerId)))
+  //       .limit(1);
 
-//     return result.length > 0;
-//   }
+  //     return result.length > 0;
+  //   }
 }
