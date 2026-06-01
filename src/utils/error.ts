@@ -11,3 +11,10 @@ export class EntityRelationError extends Error {
     this.name = "EntityRelationError";
   }
 }
+
+export class DateFormatError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DateFormatError";
+  }
+}

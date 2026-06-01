@@ -1,5 +1,3 @@
-import type { AreaRepository } from "../repositories/area.repository";
-import type { LocationRepository } from "../repositories/location.repository";
 import type { EntityService } from "../services/entity.service";
 import type { AnalysisResult } from "../types/analysis";
 import { EntityRelationError } from "../utils/error";

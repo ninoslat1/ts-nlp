@@ -28,7 +28,6 @@ export class App {
 
     const analyzer = new QueryAnalyzer(
       new IntentDetector(intents),
-      new EntityExtractor(),
       this.entityService,
       new DateExtractor(),
     );

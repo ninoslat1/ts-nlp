@@ -4,7 +4,6 @@ import type { LocationRepository } from "../repositories/location.repository";
 import type { AreaEntity } from "../types/area";
 import type { CustomerEntity } from "../types/customer";
 import type { LocationEntity } from "../types/location";
-import { normalizeTxt } from "../utils/parser";
 
 export class EntityService {
   private areas: AreaEntity[] = [];
@@ -30,11 +29,6 @@ export class EntityService {
         this.locationRepo.load_location(),
     ]);
 
-    console.log("=== LOCATION INDEX ===");
-        for (const [k, v] of this.locationByName) {
-        console.log(JSON.stringify(k), "=>", v.id);
-    }
-
     this.customers = customers.map((x) => ({
         id: x.id,
         customer_name: x.customer_name?.toLowerCase() ?? "",
@@ -57,16 +51,16 @@ export class EntityService {
 
     for (const loc of this.locations) {
         this.locationById.set(loc.id, loc);
-        this.locationByName.set(normalizeTxt(loc.name), loc)
+        this.locationByName.set(loc.name, loc)
     }
 
     for (const area of this.areas) {
         this.areaById.set(area.id, area);
-        this.areaByName.set(normalizeTxt(area.remark), area);
+        this.areaByName.set(area.remark, area);
     }
 
     for (const cust of this.customers) {
-        this.customerByName.set(normalizeTxt(cust.customer_name), cust);
+        this.customerByName.set(cust.customer_name, cust);
     }
 
     this.is_init = true;
@@ -95,39 +89,26 @@ export class EntityService {
         }
 
 getLocationByName(text: string) {
-  const normalized = normalizeTxt(text);
-
-  
 
   for (const [name, loc] of this.locationByName) {
-    console.log("COMPARE:", {
-    text: normalized,
-    name,
-    includes: normalized.includes(name),
-  });
-
-    if (normalized.includes(name)) {
-        console.log("MATCH FOUND:", loc);
-        return loc;
-    }
+    if (text.includes(name)) return loc;
   }
 
   return null;
 }
 
 getCustomerByName(text: string) {
-    const normalized = normalizeTxt(text);
+
   for (const [name, loc] of this.customerByName) {
-    if (normalized.includes(name)) return loc;
+    if (text.includes(name)) return loc;
   }
   return null;
 }
 
 getAreaByName(text: string) {
-  const normalized = normalizeTxt(text);
 
   for (const [name, area] of this.areaByName) {
-    if (normalized.includes(name)) return area;
+    if (text.includes(name)) return area;
   }
 
   return null;

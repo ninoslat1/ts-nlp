@@ -7,16 +7,12 @@ import type { AnalysisResult } from "../types/analysis";
 export class QueryAnalyzer {
   constructor(
     private readonly intentDetector: IntentDetector,
-    private readonly entityExtractor: EntityExtractor,
     private readonly entityService: EntityService,
     private readonly dateExtractor: DateExtractor,
   ) {}
 
   analyze(text: string): AnalysisResult {
     const normalized = text.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, "");
-
-    console.log("=== RAW TEXT ===", JSON.stringify(text));
-    console.log("=== NORMALIZED ===", JSON.stringify(normalized));
 
     const tokens = normalized.split(/\s+/);
     const customer = this.entityService.getCustomerByName(normalized);
