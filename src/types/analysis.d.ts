@@ -5,10 +5,13 @@ import type { LocationEntity } from "./location";
 
 export interface AnalysisResult {
   intent: string;
-  // intentScore: number;
-  // ruleIntent: Intent | null;
   customer: CustomerEntity | null;
-  area: AreaEntity | null;
+  customerScore: number;
+
   location: LocationEntity | null;
+  locationScore: number;
+  ambiguousLocations?: LocationEntity[];
+  area: AreaEntity | null;
+  areaScore: number;
   date: DateEntity | null;
 }

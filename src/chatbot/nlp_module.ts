@@ -2,6 +2,8 @@ import { distance } from "fastest-levenshtein";
 import type { EntityService } from "../services/entity.service";
 import type { TfIdf } from "./tf_idf";
 import { cosine } from "../utils/vector";
+import { GUARDRAILS } from "../static/GUARDRAIL";
+import type { MatchResult } from "../types/filter";
 
 export class NLPModule {
   constructor(
@@ -44,25 +46,62 @@ export class NLPModule {
     return best;
   }
 
-  private findBestMatch<T>(text: string, items: T[], getText: (item: T) => string) {
-    let bestMatch: T | null = null;
-    let bestScore = 0;
+  getIntentKeywords(label: string): string[] {
+    return this.intents.filter((x) => x.label === label).map((x) => x.text);
+  }
+
+  private findBestMatch<T>(text: string, items: T[], getText: (item: T) => string): MatchResult<T> {
+    const candidates: {
+      item: T;
+      score: number;
+    }[] = [];
 
     for (const item of items) {
       const score = this.score(text, getText(item));
 
-      if (score > bestScore) {
-        bestScore = score;
-        bestMatch = item;
-      }
+      candidates.push({
+        item,
+        score,
+      });
     }
 
-    return bestMatch;
+    candidates.sort((a, b) => b.score - a.score);
+
+    const best = candidates[0];
+    const second = candidates[1];
+
+    if (!best || best.score < GUARDRAILS.minEntityScore) {
+      return {
+        entity: null,
+        score: 0,
+        type: "not_found",
+      };
+    }
+
+    if (second && Math.abs(best.score - second.score) < 0.05) {
+      return {
+        type: "ambiguous",
+        entity: null,
+        score: 0,
+        candidates: [best.item, second.item],
+      };
+    }
+
+    return {
+      type: "matched",
+      entity: best.item,
+      score: best.score,
+    };
   }
 
   extractEntities(text: string) {
+    const customer = this.findBestMatch(
+      text,
+      this.entityService.getCustomers(),
+      (x) => x.customer_name,
+    );
     return {
-      customer: this.findBestMatch(text, this.entityService.getCustomers(), (x) => x.customer_name),
+      customer,
 
       location: this.findBestMatch(text, this.entityService.getLocations(), (x) => x.name),
 
